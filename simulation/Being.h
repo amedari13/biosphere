@@ -4,8 +4,8 @@
 
 #include "Capability.h"
 #include "position.h"
+#include "environment.h"
 
-using being_ptr = std::shared_ptr<class being>;
 
 enum class strategy
 {
@@ -24,18 +24,24 @@ enum class status
 
 const int mass_to_energy_factor = 10;
 
+using being_ptr = std::shared_ptr< class being >;
+using species_ptr = std::shared_ptr< class species >;
+
 class being
 {
 public:
-	being();
+	being(species_ptr s);
 	virtual ~being();
 
-	void appendCapability(capability_ptr);
+	void append_capability(capability_ptr);
 
 	status calculate_next_step(environment env);
-	status calculate_next_step(environment env);
+
+	position get_position() const;
 
 private:	
+	std::weak_ptr<species> _species;
+
 	// переменные, описывающие состояние организма
 	position _pos;	    // положение существа в симуляции
 	strategy _strategy; // текущая стратегия

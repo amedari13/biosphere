@@ -1,7 +1,18 @@
 #include "pch.h"
 #include "Being.h"
 
+being::being(species_ptr s)
+	: _species(s)
+{
+}
 
+being::~being()
+{
+}
+
+void being::append_capability(capability_ptr)
+{
+}
 
 status being::calculate_next_step(environment env)
 {
@@ -29,4 +40,9 @@ status being::calculate_next_step(environment env)
 		return status::dead;
 	}
 	return status::ok;
+}
+
+position being::get_position() const
+{
+	return _pos;
 }
