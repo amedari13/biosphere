@@ -15,6 +15,9 @@ public:
 
 	std::vector<being_ptr> const &get_beings() const;
 
+	int get_width() const;
+	int get_height() const;
+
 private:
 	std::vector<species_ptr> _species_list;
 	std::vector<being_ptr> _being_list;

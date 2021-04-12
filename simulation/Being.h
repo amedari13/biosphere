@@ -9,10 +9,10 @@
 
 enum class strategy
 {
-	rest,	// отдыхаем, набираемся сил
-	wander, // бесцельно бродить
-	afraid, // паника, убегаем
-	hunt,   // пытаемся добраться до добычи
+	rest,	  // отдыхаем, набираемся сил
+	wander,   // бесцельно бродить
+	stampede, // паника, убегаем
+	hunt,     // пытаемся добраться до добычи
 };
 
 enum class status
@@ -22,7 +22,13 @@ enum class status
 	spawn,	// размножаться
 };
 
-const int mass_to_energy_factor = 10;
+namespace cfg
+{
+	const int mass_to_energy_factor = 10;
+	const int run_expence	 = 3;
+	const int wander_expence = 1;
+	const int rest_bonus     = 2;
+}
 
 using being_ptr = std::shared_ptr< class being >;
 using species_ptr = std::shared_ptr< class species >;
@@ -35,23 +41,24 @@ public:
 
 	void append_capability(capability_ptr);
 
-	status calculate_next_step(environment env);
+	void calculate_physical_step(environment env);
+	void rethink_strategy(environment env);
+	void calculate_activity(environment env);
 
+	void set_position(position p);
 	position get_position() const;
 
-private:	
+	status get_status() const;
+
+private:
 	std::weak_ptr<species> _species;
 
 	// переменные, описывающие состояние организма
 	position _pos;	    // положение существа в симуляции
-	strategy _strategy; // текущая стратегия
-	int		 _mass;     // масса организма существа
-	int		 _energy;   // энергия, позволяющая организму 
-	int	     _temprature;    // температура тела существа
-
-	// переменные, описывающие свойства организма
-	int		 _mass_limit;
-	int		 _speed;
-	std::vector<capability_ptr> _cap_list;
+	status	 _status{ status::ok };   // текущее состояние
+	strategy _strategy{strategy::rest}; // текущая стратегия
+	int		 _mass{ 1 };     // масса организма существа
+	int		 _energy{1000};   // энергия, позволяющая организму 
+	int	     _temprature{20};    // температура тела существа
 };
 
