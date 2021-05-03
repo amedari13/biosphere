@@ -2,11 +2,14 @@
 #include "Being.h"
 #include "species.h"
 
+#include "global_scene.h"
+
 #include <assert.h>
 
 
-being::being(species_ptr s)
+being::being(species_ptr s, global_scene* sc)
 	: _species(s)
+	, _scene(sc)
 {
 }
 
@@ -18,7 +21,7 @@ void being::append_capability(capability_ptr)
 {
 }
 
-void being::calculate_physical_step(environment env)
+void being::calculate_physical_step(environment const & env)
 {
 	assert(_status != status::dead);
 
@@ -32,7 +35,7 @@ void being::calculate_physical_step(environment env)
 	switch (_strategy)
 	{
 	case strategy::stampede:
-	case  strategy::hunt:
+	case strategy::hunt:
 		_energy -= cfg::run_expence;
 		break;
 	case strategy::wander:
@@ -48,7 +51,7 @@ void being::calculate_physical_step(environment env)
 	assert(spec);
 
 	// если всё ещё есть свободная энергия -- растём
-	if (_energy > spec->_mass_limit * cfg::mass_to_energy_factor / 2)
+	if (_energy > spec->_mass_limit * cfg::mass_to_energy_factor / 10)
 	{
 		_mass += 1;
 		_energy -= cfg::mass_to_energy_factor;
@@ -68,32 +71,107 @@ void being::calculate_physical_step(environment env)
 	}
 }
 
-void being::calculate_activity(environment env)
+void being::calculate_activity(environment const & env)
 {
+	int run_speed = 3;
+	int wander_speed = 1;
+
+	auto aim = _aim.lock();
 	switch (_strategy)
 	{
 	case strategy::rest:
 		break;
 	case strategy::stampede:
-	case strategy::hunt:
-		_pos.x += rand() % 5 - 2;
-		_pos.y += rand() % 5 - 2;
+		_pos.move_from(_scene, aim->get_position(), run_speed);
 		break;
+	case strategy::hunt:
+	{
+
+		double d = _pos.distance(_scene, aim->get_position());
+		bool success = false;
+		if (d < run_speed)
+		{
+			_pos = aim->get_position();
+			success = true;
+		}
+		else
+		{ 
+			_pos.move_to(_scene, aim->get_position(), run_speed);
+			d = _pos.distance(_scene, aim->get_position());
+			if (d <= 1)
+				success = true;
+		}
+		if (success)
+			fight(aim);
+
+		break;
+	}
 	case strategy::wander:
-		_pos.x += rand() % 3 - 1;
-		_pos.y += rand() % 3 - 1;
+		_pos.x += (rand() % (wander_speed * 2 + 1) - 1);
+		_pos.y += (rand() % (wander_speed * 2 + 1) - 1);
 		break;
 	}
 }
 
-void being::rethink_strategy(environment env)
+void being::fight(being_ptr other)
 {
-	switch (rand() % 4)
+	int p = other->_mass * 100 / _mass;
+
+	constexpr int lo_range = 70;
+	constexpr int hi_range = 125;
+
+	if (other->get_status() != status::dead)
 	{
-	case 0: _strategy = strategy::rest; return;
-	case 1: _strategy = strategy::hunt; return;
-	case 2: _strategy = strategy::stampede; return;
-	case 3: _strategy = strategy::wander; return;
+		p = (p - lo_range) * 100 / (hi_range - lo_range);
+		if ((rand() % 100) > p)
+			other->kill();
+		else
+		{ 
+			kill();
+			return;
+		}
+	}
+
+	// eat it
+	if (other->_mass)
+	{
+		other->_mass--;
+		_energy += cfg::mass_to_energy_factor;
+	}
+}
+
+void being::kill()
+{
+	_status = status::dead;
+}
+
+void being::rethink_strategy(environment const & env)
+{
+	_aim.reset();
+
+	species_ptr sp = _species.lock();
+	if (_energy < sp->_want_to_rest_limit)
+	{
+		_strategy = strategy::rest;
+		return;
+	}
+
+	_strategy = strategy::wander; 
+	for (auto& n : env.neighbours)
+	{
+		int p = n->_mass * 100 / _mass;
+		if (p > sp->_treat_as_dangerous)
+		{
+			_strategy = strategy::stampede;
+			_aim = n;
+			return;
+		}
+		if (p < sp->_treat_as_yummy || n->get_status() == status::dead)
+		{
+			_strategy = strategy::hunt;
+			_aim = n;
+			return;
+		}
 	}
 }
 
@@ -110,4 +188,9 @@ position being::get_position() const
 status being::get_status() const
 {
 	return _status;
+}
+
+int being::get_mass() const
+{
+	return _mass;
 }

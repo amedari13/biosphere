@@ -17,8 +17,8 @@ void print_scene(global_scene& s)
 	{
 		position xy = b->get_position();
 		field[std::make_tuple(
-			xy.x % s.get_width(),
-			xy.y % s.get_height())] = 1;
+			static_cast<int>(fmod(xy.x, s.get_width())),
+			static_cast<int>(fmod(xy.y, s.get_height())))] = 1;
 	}
 
 	std::cout << "\x1b[?25l";

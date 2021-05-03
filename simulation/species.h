@@ -16,7 +16,10 @@ public:
 	}
 
 public:
-	int		 _mass_limit{1000};
+	int		 _treat_as_dangerous = 150;
+	int		 _treat_as_yummy = 70;
+	int		 _want_to_rest_limit = 100;
+	int		 _mass_limit{100};
 	int		 _speed{3};
 	std::vector<capability_ptr> _cap_list;
 };
