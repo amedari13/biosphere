@@ -11,9 +11,11 @@ public:
 	global_scene(int w, int h);
 
 	void add(int n, species_ptr s);
+	void add(being_ptr b);
 	void calculate();
 
 	std::vector<being_ptr> const &get_beings() const;
+	std::vector<species_ptr> const& get_species() const;
 
 	int get_width() const;
 	int get_height() const;

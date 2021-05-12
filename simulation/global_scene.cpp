@@ -9,6 +9,15 @@ global_scene::global_scene(int w, int h)
 {
 }
 
+void global_scene::add(being_ptr b)
+{
+	b->set_position(
+		position{
+			static_cast<double>(rand() % _width),
+			static_cast<double>(rand() % _height) });
+	_being_list.push_back(b);
+}
+
 void global_scene::add(int n, species_ptr s)
 {
 	_species_list.push_back(s);
@@ -16,24 +25,32 @@ void global_scene::add(int n, species_ptr s)
 	for (int index = n; index-- > 0;)
 	{
 		auto b = std::make_shared<being>(s, this);
-		b->set_position(
-			position{
-				static_cast<double>(rand() % _width),
-				static_cast<double>(rand() % _height) });
-		_being_list.push_back(b);
+		add(b);
 	}
 }
 
 void global_scene::calculate()
 {
-	std::vector<being_ptr> to_delete;
-	for (auto& b : _being_list)
+	auto bs = _being_list;
+	for (auto& b : bs)
 	{
-		if (b->get_status() == status::dead)
-			continue;
-
 		environment env;
 		env.temperature = 20;
+
+		if (!b->is_alive())
+		{
+			if (b->get_mass() == 0)
+			{
+				_being_list.erase(
+					std::remove(_being_list.begin(), _being_list.end(), b),
+					_being_list.end());
+			}
+			else
+			{
+				b->decay();
+			}
+			continue;
+		}
 
 		constexpr int close_range = 6;
 
@@ -50,27 +67,27 @@ void global_scene::calculate()
 			});
 
 		b->calculate_physical_step(env);
-		if (b->get_status() == status::dead)
-			continue;
+
+		if (b->get_status() == status::spawn)
+		{
+			auto clone = b->clone();
+			add(clone);		
+		}
 
 		if (rand() % 10 == 0)
 			b->rethink_strategy(env);
 		b->calculate_activity(env);
-
-		if (b->get_mass() == 0 && b->get_status() == status::dead)
-			to_delete.push_back(b);
-	}
-	for (auto& b : to_delete)
-	{
-		_being_list.erase(
-			std::remove(_being_list.begin(), _being_list.end(), b),
-			_being_list.end());
 	}
 }
 
 std::vector<being_ptr> const& global_scene::get_beings() const
 {
 	return _being_list;
+}
+
+std::vector<species_ptr> const& global_scene::get_species() const
+{
+	return _species_list;
 }
 
 int global_scene::get_width() const

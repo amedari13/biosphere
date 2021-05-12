@@ -23,7 +23,7 @@ void being::append_capability(capability_ptr)
 
 void being::calculate_physical_step(environment const & env)
 {
-	assert(_status != status::dead);
+	assert(is_alive());
 
 	// если холодно, теряем энергию на обогрева
 	int delta_t = env.temperature - _temprature;
@@ -77,6 +77,11 @@ void being::calculate_activity(environment const & env)
 	int wander_speed = 1;
 
 	auto aim = _aim.lock();
+	if (!aim && (_strategy == strategy::hunt || _strategy == strategy::stampede))
+	{
+		_strategy = strategy::rest;
+	}
+
 	switch (_strategy)
 	{
 	case strategy::rest:
@@ -86,7 +91,6 @@ void being::calculate_activity(environment const & env)
 		break;
 	case strategy::hunt:
 	{
-
 		double d = _pos.distance(_scene, aim->get_position());
 		bool success = false;
 		if (d < run_speed)
@@ -107,8 +111,10 @@ void being::calculate_activity(environment const & env)
 		break;
 	}
 	case strategy::wander:
-		_pos.x += (rand() % (wander_speed * 2 + 1) - 1);
-		_pos.y += (rand() % (wander_speed * 2 + 1) - 1);
+		_pos.move_by(_scene,
+			rand() % (wander_speed * 2 + 1) - 1,
+			rand() % (wander_speed * 2 + 1) - 1
+		);
 		break;
 	}
 }
@@ -120,14 +126,14 @@ void being::fight(being_ptr other)
 	constexpr int lo_range = 70;
 	constexpr int hi_range = 125;
 
-	if (other->get_status() != status::dead)
+	if (other->is_alive())
 	{
 		p = (p - lo_range) * 100 / (hi_range - lo_range);
 		if ((rand() % 100) > p)
-			other->kill();
+			other->die();
 		else
 		{ 
-			kill();
+			die();
 			return;
 		}
 	}
@@ -140,9 +146,18 @@ void being::fight(being_ptr other)
 	}
 }
 
-void being::kill()
+void being::die()
 {
 	_status = status::dead;
+}
+
+void being::decay()
+{
+	if (_mass)
+	{
+		if (rand() % 100 < 10)
+			_mass -= 1;
+	}
 }
 
 void being::rethink_strategy(environment const & env)
@@ -159,6 +174,7 @@ void being::rethink_strategy(environment const & env)
 	_strategy = strategy::wander; 
 	for (auto& n : env.neighbours)
 	{
+		assert(n);
 		int p = n->_mass * 100 / _mass;
 		if (p > sp->_treat_as_dangerous)
 		{
@@ -166,7 +182,7 @@ void being::rethink_strategy(environment const & env)
 			_aim = n;
 			return;
 		}
-		if (p < sp->_treat_as_yummy || n->get_status() == status::dead)
+		if (p < sp->_treat_as_yummy || !n->is_alive())
 		{
 			_strategy = strategy::hunt;
 			_aim = n;
@@ -193,4 +209,30 @@ status being::get_status() const
 int being::get_mass() const
 {
 	return _mass;
+}
+
+int being::get_energy() const
+{
+	return _energy;
+}
+
+bool being::is_alive() const
+{
+	return _status != status::dead;
+}
+
+species_ptr being::get_species() const
+{
+	return _species.lock();
+}
+
+being_ptr being::clone()
+{
+	being_ptr copy = std::make_shared<being>( get_species(), _scene );
+	copy->_mass = (_mass /= 2);
+	copy->_energy = (_energy /= 2);
+	copy->_status = _status = status::ok;
+	copy->_strategy = _strategy = strategy::rest;
+
+	return copy;
 }
