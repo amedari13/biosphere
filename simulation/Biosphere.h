@@ -10,7 +10,7 @@ class biosphere
 public:
 
 private:
-	// список живых сущесвт
+	// СЃРїРёСЃРѕРє Р¶РёРІС‹С… СЃСѓС‰РµСЃРІС‚
 	std::vector<being_ptr> _beings;
 };
 

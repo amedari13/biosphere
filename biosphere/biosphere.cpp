@@ -12,28 +12,9 @@
 #include <sstream>
 #include <map>
 
-namespace
-{
-	struct species_stat
-	{
-		int count{ 0 };
-		int dead{ 0 };
-		int avr_energy{ 0 };
-		int max_energy{ 0 };
-		int avr_mass{ 0 };
-		int max_mass{ 0 };
-	};
-}
 
 void print_scene(global_scene& s)
 {
-	auto const& sps = s.get_species();
-	std::map<species_ptr, species_stat> sstat;
-	for (auto& sp : sps)
-	{
-		sstat[sp] = species_stat{};
-	}
-
 	std::map<std::tuple<int, int>, int> field;
 	auto const& vec = s.get_beings();
 	for (auto& b : vec)
@@ -42,22 +23,9 @@ void print_scene(global_scene& s)
 		field[std::make_tuple(
 			static_cast<int>(fmod(xy.x, s.get_width())),
 			static_cast<int>(fmod(xy.y, s.get_height())))] = 1;
-
-
-		species_stat& stat = sstat[b->get_species()];
-
-		if (!b->is_alive())
-		{
-			stat.dead += 1;
-			continue;
-		}
-
-		stat.count += 1;
-		stat.avr_energy += b->get_energy();
-		stat.max_energy = std::max(stat.max_energy, b->get_energy());
-		stat.avr_mass += b->get_mass();
-		stat.max_mass = std::max(stat.max_mass, b->get_mass());
 	}
+
+	auto const & sstat = scene.
 
 	std::vector<std::string> stat_lines;
 	int index = 0;
@@ -71,7 +39,7 @@ void print_scene(global_scene& s)
 		stat.avr_mass /= stat.count;
 
 		std::ostringstream ss;
-		ss << "sp#" << ++index << "   : " << stat.count << " alive, " << stat.dead << " dead";
+		ss << "sp#" << ++index << "  : " << stat.count << " alive, " << stat.dead << " dead";
 		stat_lines.push_back(ss.str());
 
 		ss.str("");

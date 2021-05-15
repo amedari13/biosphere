@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Being.h"
+#include "being.h"
 #include "species.h"
 
 #include "global_scene.h"
@@ -25,7 +25,7 @@ void being::calculate_physical_step(environment const & env)
 {
 	assert(is_alive());
 
-	// если холодно, теряем энергию на обогрева
+	// РµСЃР»Рё С…РѕР»РѕРґРЅРѕ, С‚РµСЂСЏРµРј СЌРЅРµСЂРіРёСЋ РЅР° РѕР±РѕРіСЂРµРІР°
 	int delta_t = env.temperature - _temprature;
 	if (delta_t < -10)
 	{
@@ -46,18 +46,18 @@ void being::calculate_physical_step(environment const & env)
 		break;
 	}
 
-	// получаем
+	// РїРѕР»СѓС‡Р°РµРј
 	species_ptr spec = _species.lock();
 	assert(spec);
 
-	// если всё ещё есть свободная энергия -- растём
+	// РµСЃР»Рё РІСЃС‘ РµС‰С‘ РµСЃС‚СЊ СЃРІРѕР±РѕРґРЅР°СЏ СЌРЅРµСЂРіРёСЏ -- СЂР°СЃС‚С‘Рј
 	if (_energy > spec->_mass_limit * cfg::mass_to_energy_factor / 10)
 	{
 		_mass += 1;
 		_energy -= cfg::mass_to_energy_factor;
 	}
 
-	// если достигли критической массы -- размножаемся
+	// РµСЃР»Рё РґРѕСЃС‚РёРіР»Рё РєСЂРёС‚РёС‡РµСЃРєРѕР№ РјР°СЃСЃС‹ -- СЂР°Р·РјРЅРѕР¶Р°РµРјСЃСЏ
 	if (_mass > spec->_mass_limit)
 	{
 		_status = status::spawn;
@@ -71,7 +71,7 @@ void being::calculate_physical_step(environment const & env)
 	}
 }
 
-void being::calculate_activity(environment const & env)
+void being::calculate_activity(environment const & /*env*/)
 {
 	int run_speed = 3;
 	int wander_speed = 1;
