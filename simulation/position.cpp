@@ -4,6 +4,7 @@
 #include "global_scene.h"
 
 #include <stdlib.h>
+#include <math.h>
 #include <assert.h>
 
 double fmod_positive(double x, double w)
