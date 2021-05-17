@@ -18,7 +18,7 @@ public:
     explicit UniverseOutputWindow(std::pair<int, int> size, QWidget *parent = nullptr);
     ~UniverseOutputWindow();
 
-    void addPoint(int x, int y);
+    void addPoint(int x, int y, int c);
 private:
 
     void timerEvent(QTimerEvent *event) override;
@@ -27,6 +27,7 @@ private:
 private slots:
     void on_stop_universe_clicked();
     void make_a_cycle();
+    void write_to_db();
 
 private:
     Ui::universe_output_Window *ui;

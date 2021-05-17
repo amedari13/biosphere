@@ -38,7 +38,7 @@ color: #000000;</string>
         <string notr="true">background-color: #808080;</string>
        </property>
        <property name="text">
-        <string>100</string>
+        <string>200</string>
        </property>
       </widget>
      </item>

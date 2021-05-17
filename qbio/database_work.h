@@ -1,13 +1,16 @@
 #ifndef DATABASE_WORK_H
 #define DATABASE_WORK_H
+
 #include <QSqlDatabase>
+
+#include "global_scene.h"
 
 // непотокобезопасный одиночка
 class database_work
 {
 
 protected:
-    database_work(){};
+    database_work();;
     static database_work* database;
 
 public:
@@ -17,6 +20,8 @@ public:
 
     void DB_connectNwrite(QString);
     void DB_delete_all(QSqlDatabase &db);
+
+    int save_species( species_ptr sp, species_stat_entry const& st );
 
 private:
     bool open_database();

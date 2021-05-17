@@ -32,6 +32,22 @@ if (db.lastError().isValid())\
 
 
 database_work* database_work::database = nullptr;
+database_work::database_work()
+{
+    if(!open_database())
+    {
+        QMessageBox::critical(0, "Error", "The program will be closed. Unable to connect to database.");
+        QApplication::exit(-1);
+    }
+
+    // если таблиц бд не существует -> создаем
+    if(!create_database_tables())
+    {
+        QMessageBox::critical(0, "Error", "The program will be closed. Unable to create database.");
+        QApplication::exit(-1);
+    }
+}
+
 database_work* database_work::GetInstance()
 {
     if(database == nullptr){
@@ -50,7 +66,7 @@ bool database_work::open_database()
     {
         DB_CHECK(db);
         return false;
-    }
+    }       
 
     return true;
 }
@@ -64,25 +80,28 @@ bool database_work::create_database_tables()
 {
     QSqlQuery query(db);
 
-    query.exec("create table bio_species"
-               "(id int primary key,"
-               "name nvarchar(20)"
+    query.exec("PRAGMA foreign_keys = true;");
+    QUERY_CHECK;
+
+    query.exec("create table if not exists bio_species"
+               "(id INTEGER primary key AUTOINCREMENT"
+               ",name nvarchar(20)"
                ")");
     QUERY_CHECK;
 
-    query.exec(" create table bio_piece"
-                "(species int foreign key references bio_species(id)"
-                ",id int primary key"
-                ",alive bit default 1"
-                ",lifespan int);");
+    query.exec(" create table if not exists bio_piece"
+                "(id INTEGER primary key AUTOINCREMENT"
+                ",species INTEGER unique"
+                ",alive INTEGER default 1"
+                ",lifespan INTEGER);");
     QUERY_CHECK;
 
-    query.exec(" create table bio_statistics"
-                  "(species int foreign key references bio_species(id)"
-                  ",q_alive int"
-                  ",q_dead int"
-                  ",avg_lifespan int"
-                  ",q_tics int);");
+    query.exec(" create table if not exists bio_statistics"
+                  "(species INTEGER"
+                  ",q_alive INTEGER"
+                  ",q_dead INTEGER"
+                  ",avg_lifespan INTEGER"
+                  ",q_tics INTEGER);");
     QUERY_CHECK;
 
     return true;
@@ -102,35 +121,48 @@ void database_work::close_db()
     db.close();
 }
 
-
-
 //основная логика работы с бд
 void database_work::DB_connectNwrite(QString outer_select)
 {
-    if(!open_database())
-    {
-        QMessageBox::critical(0, "Error", "The program will be closed. Unable to connect to database.");
-        QApplication::exit(-1);
-    }
-
-    // если таблиц бд не существует -> создаем
-    if(!create_database_tables())
-    {
-        QMessageBox::critical(0, "Error", "The program will be closed. Unable to create database.");
-        QApplication::exit(-1);
-    }
-
     // бд существует -> добавляем записи
     if(!add_info_db(outer_select))
     {
         QMessageBox::critical(0, "Error", "The program will be closed. Unable to edit the database.");
         QApplication::exit(-1);
     }
-    close_db();
+//    close_db();
 }
 
 void database_work::DB_delete_all(QSqlDatabase &db)
 {
     QSqlQuery del_query(db);
     del_query.exec("use master; drop database biosphere_simulation;");
+}
+
+int database_work::save_species(species_ptr sp, const species_stat_entry &st)
+{
+    QSqlQuery query(db);
+
+    if ( sp->get_id() == 0)
+    {
+        query.prepare("INSERT INTO bio_species (name) VALUES (:name);");
+        query.bindValue(0, QString::fromStdString(sp->get_name()));
+        int id = query.exec();
+        QUERY_CHECK;
+        sp->set_id( id );
+    }
+
+    {
+        QSqlQuery query(db);
+
+        query.prepare("INSERT OR REPLACE bio_statistics (species, q_alive, q_dead) "
+                  " VALUES (:sp, :alive, :dead);");
+        query.bindValue(0, sp->get_id());
+        query.bindValue(1, st.count);
+        query.bindValue(2, st.dead);
+        query.exec();
+        QUERY_CHECK;
+    }
+
+    return true;
 }

@@ -15,16 +15,21 @@ inline void make_random(int& v)
 class species
 {
 public:
-	static species_ptr random()
-	{
-		species_ptr self = std::make_shared<species>();
-		make_random(self->_treat_as_dangerous);
-		make_random(self->_treat_as_yummy);
-		make_random(self->_want_to_rest_limit);
-		make_random(self->_mass_limit);
-		make_random(self->_speed);
-		return self;
-	}
+    static species_ptr random();
+
+    int get_id() const;
+    void set_id(int);
+
+    std::string get_name() const;
+    void set_name(std::string const & n);
+
+    int get_color() const;
+    void set_color(int color);
+
+private:
+    int _id{0};
+    int _color{0};
+    std::string _name;
 
 public:
 	int		 _treat_as_dangerous = 150;

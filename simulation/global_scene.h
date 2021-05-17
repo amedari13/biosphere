@@ -10,15 +10,16 @@ struct species_stat_entry
 {
 	int count{ 0 };
 	int dead{ 0 };
-	int avr_energy{ 0 };
+    int total_energy{ 0 };
 	int max_energy{ 0 };
-	int avr_mass{ 0 };
+    int total_mass{ 0 };
 	int max_mass{ 0 };
+    int livespan{ 0 };
 };
 
 struct global_scene_stats
 {
-    std::map<species_ptr, species_stat_entry > sstat;
+    std::map<species_ptr, species_stat_entry > by_species;
 };
 
 class global_scene
@@ -41,6 +42,7 @@ private:
 	std::vector<species_ptr> _species_list;
 	std::vector<being_ptr> _being_list;
 
+    int _cycle_count{0};
 	int _width;
 	int _height;
 };

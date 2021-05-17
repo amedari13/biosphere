@@ -78,6 +78,8 @@ void global_scene::calculate()
 			b->rethink_strategy(env);
 		b->calculate_activity(env);
 	}
+
+    ++_cycle_count;
 }
 
 std::vector<being_ptr> const& global_scene::get_beings() const
@@ -95,12 +97,12 @@ global_scene_stats global_scene::get_statistics() const
     global_scene_stats result;
 	for (auto& sp : _species_list)
 	{
-        result.sstat[sp] = species_stat_entry{};
+        result.by_species[sp] = species_stat_entry{};
 	}
 
 	for (auto& b : _being_list)
 	{
-        auto& stat = result.sstat[b->get_species()];
+        auto& stat = result.by_species[b->get_species()];
 
 		if (!b->is_alive())
 		{
@@ -109,10 +111,11 @@ global_scene_stats global_scene::get_statistics() const
 		}
 
 		stat.count += 1;
-		stat.avr_energy += b->get_energy();
+        stat.total_energy += b->get_energy();
 		stat.max_energy = std::max(stat.max_energy, b->get_energy());
-		stat.avr_mass += b->get_mass();
+        stat.total_mass += b->get_mass();
 		stat.max_mass = std::max(stat.max_mass, b->get_mass());
+        stat.livespan = _cycle_count;
 	}
 
     return result;
