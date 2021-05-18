@@ -165,7 +165,7 @@ void being::rethink_strategy(environment const & env)
 	_aim.reset();
 
 	species_ptr sp = _species.lock();
-	if (_energy < sp->_want_to_rest_limit)
+    if (_energy < sp->_lazyness)
 	{
 		_strategy = strategy::rest;
 		return;
@@ -176,13 +176,13 @@ void being::rethink_strategy(environment const & env)
 	{
 		assert(n);
 		int p = n->_mass * 100 / _mass;
-		if (p > sp->_treat_as_dangerous)
+        if (p > sp->_fear)
 		{
 			_strategy = strategy::stampede;
 			_aim = n;
 			return;
 		}
-		if (p < sp->_treat_as_yummy || !n->is_alive())
+        if (p < sp->_greed || !n->is_alive())
 		{
 			_strategy = strategy::hunt;
 			_aim = n;

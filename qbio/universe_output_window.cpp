@@ -32,6 +32,12 @@ UniverseOutputWindow::UniverseOutputWindow(std::pair<int,int> size, QWidget *par
     ui->tableWidget->setColumnWidth(3, 60);
     ui->tableWidget->setColumnWidth(4, 60);
 
+    ui->fearSlider->setRange( 0, 400 );
+    ui->greedSlider->setRange( 0, 400 );
+    ui->lazynessSlider->setRange( 0, 400 );
+    ui->massSlider->setRange( 0, 400 );
+    ui->speedSlider->setRange( 0, 400 );
+
     srand(time(0));
     for (int c = 6; c-- > 0; )
             gscene.add(15, species::random());
@@ -47,8 +53,8 @@ void UniverseOutputWindow::make_a_cycle()
     int index = 0;
     for(auto const& [sp, st] : stats.by_species)
     {
-        if (index >= ui->tableWidget->rowCount())
-            ui->tableWidget->insertRow(index);
+        if (st.count ==0 && st.dead == 0)
+            continue;
 
         QStringList items;
         items << QString::fromStdString(sp->get_name());
@@ -56,6 +62,9 @@ void UniverseOutputWindow::make_a_cycle()
         items << QString::number( st.dead );
         items << QString::number( st.count ? st.total_mass / st.count : 0);
         items << QString::number( st.max_mass );
+
+        if (index >= ui->tableWidget->rowCount())
+            ui->tableWidget->insertRow(index);
 
         // set items
         for(int col = 0; col < items.size(); ++col)
@@ -105,6 +114,14 @@ void UniverseOutputWindow::addPoint(int x, int y, int c)
                       QPen(clr), QBrush{Qt::transparent});
 }
 
+void UniverseOutputWindow::onModifyProperty()
+{
+    if (_lock_sliders) return;
+    ui->createNewButton->setEnabled(true);
+    ui->cancelButton->setEnabled(true);
+    ui->propertyGroup->setTitle(QString("Unknown creature"));
+}
+
 void UniverseOutputWindow::timerEvent(QTimerEvent * /*event*/)
 {
     make_a_cycle();
@@ -122,3 +139,74 @@ void UniverseOutputWindow::on_stop_universe_clicked()
     write_to_db();
 }
 
+
+void UniverseOutputWindow::on_tableWidget_currentCellChanged(int currentRow,
+                                                             int /*currentColumn*/,
+                                                             int /*previousRow*/,
+                                                             int /*previousColumn*/)
+{
+    int index=0;
+    for(auto const& [sp, st] : stats.by_species)
+    {
+        if (st.count ==0 && st.dead == 0)
+            continue;
+        if (currentRow == index++)
+        {
+            _lock_sliders = true;
+            ui->propertyGroup->setTitle(QString::fromStdString(sp->get_name()));
+            ui->fearSlider->setValue(sp->_fear * 100 / fear_default);
+            ui->greedSlider->setValue(sp->_greed * 100 / greed_default);
+            ui->lazynessSlider->setValue(sp->_lazyness * 100 / lazyness_default);
+            ui->massSlider->setValue(sp->_mass_limit * 100 / mass_limit_default);
+            ui->speedSlider->setValue(sp->_speed * 100 / speed_default);
+            _lock_sliders = false;
+            return;
+        }
+    }
+}
+
+void UniverseOutputWindow::on_fearSlider_valueChanged(int /*value*/)
+{
+    onModifyProperty();
+}
+
+void UniverseOutputWindow::on_greedSlider_valueChanged(int /*value*/)
+{
+    onModifyProperty();
+}
+
+void UniverseOutputWindow::on_lazynessSlider_valueChanged(int /*value*/)
+{
+    onModifyProperty();
+}
+
+void UniverseOutputWindow::on_massSlider_valueChanged(int /*value*/)
+{
+    onModifyProperty();
+}
+
+void UniverseOutputWindow::on_speedSlider_valueChanged(int /*value*/)
+{
+    onModifyProperty();
+}
+
+void UniverseOutputWindow::on_cancelButton_clicked()
+{
+    ui->createNewButton->setEnabled(false);
+    ui->cancelButton->setEnabled(false);
+    on_tableWidget_currentCellChanged(
+                ui->tableWidget->currentRow(), 1, 0, 0);
+}
+
+void UniverseOutputWindow::on_createNewButton_clicked()
+{
+    auto sp = species::random();
+    sp->_fear = fear_default * ui->fearSlider->value() / 100;
+    sp->_greed= greed_default * ui->greedSlider->value() / 100;
+    sp->_lazyness = lazyness_default * ui->lazynessSlider->value() / 100;
+    sp->_mass_limit = std::max(40, mass_limit_default * ui->massSlider->value() / 100);
+    sp->_speed = speed_default * ui->speedSlider->value() / 100;
+    gscene.add(15, sp);
+
+    on_cancelButton_clicked();
+}

@@ -19,6 +19,7 @@ public:
     ~UniverseOutputWindow();
 
     void addPoint(int x, int y, int c);
+    void onModifyProperty();
 private:
 
     void timerEvent(QTimerEvent *event) override;
@@ -29,7 +30,17 @@ private slots:
     void make_a_cycle();
     void write_to_db();
 
+    void on_tableWidget_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void on_fearSlider_valueChanged(int value);
+    void on_greedSlider_valueChanged(int value);
+    void on_lazynessSlider_valueChanged(int value);
+    void on_massSlider_valueChanged(int value);
+    void on_speedSlider_valueChanged(int value);
+    void on_cancelButton_clicked();
+    void on_createNewButton_clicked();
+
 private:
+    bool _lock_sliders{false};
     Ui::universe_output_Window *ui;
     QGraphicsScene *scene;
     global_scene gscene;
