@@ -14,8 +14,8 @@
    <string>Biosphere simulation</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #909090;
-color: #000000;</string>
+   <string notr="true">background-color: #1f1f1f;
+color: #ffffff;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">

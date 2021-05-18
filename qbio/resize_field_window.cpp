@@ -23,10 +23,10 @@ bool ResizeFieldWindow::TryToConfirm()
     _width  = ui->get_width ->text().toInt();
     _height = ui->get_height->text().toInt();
 
-    if (_width < 2 || _width > 1000
-            || _height < 2 || _height > 1000)
+    if (_width < 100 || _width > 1000
+            || _height < 100 || _height > 1000)
     {
-        QMessageBox::warning(this, "Error", "The width and height should be between 2 and 1000");
+        QMessageBox::warning(this, "Error", "The width and height should be between 100 and 1000");
         return false;
     }
     size.first = _width;

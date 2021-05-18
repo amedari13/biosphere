@@ -26,11 +26,11 @@ UniverseOutputWindow::UniverseOutputWindow(std::pair<int,int> size, QWidget *par
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
-    ui->tableWidget->setColumnWidth(0, 200);
-    ui->tableWidget->setColumnWidth(1, 50);
-    ui->tableWidget->setColumnWidth(2, 50);
-    ui->tableWidget->setColumnWidth(3, 50);
-    ui->tableWidget->setColumnWidth(4, 50);
+    ui->tableWidget->setColumnWidth(0, 170);
+    ui->tableWidget->setColumnWidth(1, 60);
+    ui->tableWidget->setColumnWidth(2, 60);
+    ui->tableWidget->setColumnWidth(3, 60);
+    ui->tableWidget->setColumnWidth(4, 60);
 
     srand(time(0));
     for (int c = 6; c-- > 0; )

@@ -14,7 +14,7 @@
    <string>Enter the size of the universe</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #909090;
+   <string notr="true">background-color: #1f1f1f;
 color: #000000;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -22,6 +22,9 @@ color: #000000;</string>
     <layout class="QFormLayout" name="formLayout">
      <item row="1" column="0">
       <widget class="QLabel" name="width_label">
+       <property name="styleSheet">
+        <string notr="true">color:#ffffff;</string>
+       </property>
        <property name="text">
         <string>Width</string>
        </property>
@@ -59,6 +62,9 @@ color: #000000;</string>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="height_label">
+       <property name="styleSheet">
+        <string notr="true">color:#ffffff;</string>
+       </property>
        <property name="text">
         <string>Height</string>
        </property>
