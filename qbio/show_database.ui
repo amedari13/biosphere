@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>show_database</class>
+ <widget class="QDialog" name="show_database">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>530</width>
+    <height>476</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>511</width>
+     <height>451</height>
+    </rect>
+   </property>
+   <column>
+    <property name="text">
+     <string>Species Id</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Species Name</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Новый столбец</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Новый столбец</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Ticks</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

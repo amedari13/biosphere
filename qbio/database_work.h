@@ -18,17 +18,13 @@ public:
     void operator=(const database_work &) = delete;
     static database_work *GetInstance();
 
-    void DB_connectNwrite(QString);
-    void DB_delete_all(QSqlDatabase &db);
-
     int save_species( species_ptr sp, species_stat_entry const& st );
+    QStringList get_species();
 
 private:
     bool open_database();
     bool create_database_tables();
-    bool exist_db();
-    bool add_info_db(QString outer_select);
-    void close_db();
+
 private:
     QSqlDatabase db;
 };

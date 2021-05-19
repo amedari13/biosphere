@@ -12,7 +12,7 @@ QColor int2color( int c )
 {
     static QStringList ns = QString(
                 "blue red yellow violet orange yellowgreen "
-                "pink plum olive navy khaki").split(" ");
+                "pink plum olive khaki white").split(" ");
     return QColor{ ns[ c % ns.size() ] };
 }
 
@@ -22,15 +22,16 @@ UniverseOutputWindow::UniverseOutputWindow(std::pair<int,int> size, QWidget *par
     , gscene(size.first, size.second)
 {
     ui->setupUi(this);
+    ui->tableWidget->verticalHeader()->setVisible(false);
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
-    ui->tableWidget->setColumnWidth(0, 170);
-    ui->tableWidget->setColumnWidth(1, 60);
-    ui->tableWidget->setColumnWidth(2, 60);
-    ui->tableWidget->setColumnWidth(3, 60);
-    ui->tableWidget->setColumnWidth(4, 60);
+    ui->tableWidget->setColumnWidth(0, 173);
+    ui->tableWidget->setColumnWidth(1, 85);
+    ui->tableWidget->setColumnWidth(2, 85);
+    ui->tableWidget->setColumnWidth(3, 85);
+    ui->tableWidget->setColumnWidth(4, 85);
 
     ui->fearSlider->setRange( 0, 400 );
     ui->greedSlider->setRange( 0, 400 );
@@ -42,7 +43,7 @@ UniverseOutputWindow::UniverseOutputWindow(std::pair<int,int> size, QWidget *par
     for (int c = 6; c-- > 0; )
             gscene.add(15, species::random());
 
-    startTimer(100);
+    timer_id = startTimer(100);
 }
 
 void UniverseOutputWindow::make_a_cycle()
@@ -134,9 +135,14 @@ void UniverseOutputWindow::resizeEvent(QResizeEvent * /*event*/)
     ui->graphicsView->fitInView(sceneRect);
 }
 
+void UniverseOutputWindow::showEvent(QShowEvent * /*event*/)
+{
+    resize(1099, 593);
+}
+
 void UniverseOutputWindow::on_stop_universe_clicked()
 {
-    killTimer(0);
+    killTimer(timer_id);
     write_to_db();
 }
 

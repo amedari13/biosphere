@@ -18,6 +18,7 @@ SOURCES += \
     mainwindow.cpp \
     resize_field_window.cpp \
     scene.cpp \
+    show_database.cpp \
     universe_output_window.cpp
 
 HEADERS += \
@@ -25,11 +26,13 @@ HEADERS += \
     mainwindow.h \
     resize_field_window.h \
     scene.h \
+    show_database.h \
     universe_output_window.h
 
 FORMS += \
     mainwindow.ui \
     resize_field_window.ui \
+    show_database.ui \
     universe_output_window.ui
 
 TRANSLATIONS += \

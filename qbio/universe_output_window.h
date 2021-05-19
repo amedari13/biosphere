@@ -24,6 +24,7 @@ private:
 
     void timerEvent(QTimerEvent *event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void showEvent(QShowEvent* event) override;
 
 private slots:
     void on_stop_universe_clicked();
@@ -40,6 +41,7 @@ private slots:
     void on_createNewButton_clicked();
 
 private:
+    int timer_id;
     bool _lock_sliders{false};
     Ui::universe_output_Window *ui;
     QGraphicsScene *scene;

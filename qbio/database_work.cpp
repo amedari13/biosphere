@@ -36,15 +36,13 @@ database_work::database_work()
 {
     if(!open_database())
     {
-        QMessageBox::critical(0, "Error", "The program will be closed. Unable to connect to database.");
-        QApplication::exit(-1);
+        QMessageBox::critical(0, "Error", "TCurrrent universe will not be saved. Unable to open the database.");
     }
 
     // если таблиц бд не существует -> создаем
     if(!create_database_tables())
     {
-        QMessageBox::critical(0, "Error", "The program will be closed. Unable to create database.");
-        QApplication::exit(-1);
+        QMessageBox::critical(0, "Error", "Currrent universe will not be saved. Unable to edit the database.");
     }
 }
 
@@ -55,6 +53,8 @@ database_work* database_work::GetInstance()
     }
     return database;
 }
+
+
 
 bool database_work::open_database()
 {
@@ -69,11 +69,6 @@ bool database_work::open_database()
     }       
 
     return true;
-}
-
-bool database_work::exist_db()
-{
-    return QFile::exists(db.databaseName());
 }
 
 bool database_work::create_database_tables()
@@ -107,38 +102,6 @@ bool database_work::create_database_tables()
     return true;
 }
 
-bool database_work::add_info_db(QString outer_select)
-{
-    QSqlQuery query(db);
-    query.prepare(outer_select);
-    if(query.exec())
-        return true;
-    return false;
-}
-
-void database_work::close_db()
-{
-    db.close();
-}
-
-//основная логика работы с бд
-void database_work::DB_connectNwrite(QString outer_select)
-{
-    // бд существует -> добавляем записи
-    if(!add_info_db(outer_select))
-    {
-        QMessageBox::critical(0, "Error", "The program will be closed. Unable to edit the database.");
-        QApplication::exit(-1);
-    }
-//    close_db();
-}
-
-void database_work::DB_delete_all(QSqlDatabase &db)
-{
-    QSqlQuery del_query(db);
-    del_query.exec("use master; drop database biosphere_simulation;");
-}
-
 int database_work::save_species(species_ptr sp, const species_stat_entry &st)
 {
     QSqlQuery query(db);
@@ -165,4 +128,21 @@ int database_work::save_species(species_ptr sp, const species_stat_entry &st)
     }
 
     return true;
+}
+
+QStringList database_work::get_species()
+{
+    QSqlQuery query(db);
+
+    query.exec(" select species, q_alive, q_dead from bio_statistics");
+    QUERY_CHECK;
+
+    while(query.next())
+    {
+        QStringList items;
+        items << query.value(0).toString();
+        items << query.value(1).toString();
+        items << query.value(2).toString();
+    }
+    return QStringList;
 }

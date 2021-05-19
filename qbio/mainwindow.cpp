@@ -31,7 +31,7 @@ void MainWindow::on_create_universe_Button_clicked()
         auto universe = new UniverseOutputWindow{universe_size.size, this};
         universe->setWindowFlags (Qt::WindowMaximizeButtonHint |
                                  (universe->windowFlags() & ~Qt::WindowContextHelpButtonHint));
-        universe->showMaximized();
+        universe->show();
 
     }
     show();
