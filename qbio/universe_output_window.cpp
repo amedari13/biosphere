@@ -119,6 +119,7 @@ void UniverseOutputWindow::resizeEvent(QResizeEvent * /*event*/)
 
 void UniverseOutputWindow::on_stop_universe_clicked()
 {
+    killTimer(0);
     write_to_db();
 }
 
