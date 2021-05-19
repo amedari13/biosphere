@@ -16,9 +16,9 @@ static std::vector<std::string> names2 =
 species_ptr species::random()
 {
     species_ptr self = std::make_shared<species>();
-    make_random(self->_treat_as_dangerous);
-    make_random(self->_treat_as_yummy);
-    make_random(self->_want_to_rest_limit);
+    make_random(self->_fear);
+    make_random(self->_greed);
+    make_random(self->_lazyness);
     make_random(self->_mass_limit);
     make_random(self->_speed);
     self->set_color( rand() % 16 );

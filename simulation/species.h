@@ -12,6 +12,12 @@ inline void make_random(int& v)
 	v = v * (rand() % 100 + 50) / 100;
 }
 
+constexpr int fear_default = 70;
+constexpr int greed_default = 150;
+constexpr int lazyness_default = 100;
+constexpr int mass_limit_default = 100;
+constexpr int speed_default = 3;
+
 class species
 {
 public:
@@ -32,9 +38,9 @@ private:
     std::string _name;
 
 public:
-	int		 _treat_as_dangerous = 150;
-	int		 _treat_as_yummy = 70;
-	int		 _want_to_rest_limit = 100;
+    int		 _fear = 150;
+    int		 _greed = 70;
+    int		 _lazyness = 100;
 	int		 _mass_limit{100};
 	int		 _speed{3};
 	std::vector<capability_ptr> _cap_list;
