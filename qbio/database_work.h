@@ -19,7 +19,7 @@ public:
     static database_work *GetInstance();
 
     int save_species( species_ptr sp, species_stat_entry const& st );
-    QStringList get_species();
+    std::vector<QStringList> get_species();
 
 private:
     bool open_database();

@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QTimer>
 #include <QtAlgorithms>
+#include <show_database.h>
 
 QColor int2color( int c )
 {
@@ -144,6 +145,8 @@ void UniverseOutputWindow::on_stop_universe_clicked()
 {
     killTimer(timer_id);
     write_to_db();
+    show_database win;
+    win.exec();
 }
 
 

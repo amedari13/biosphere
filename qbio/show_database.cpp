@@ -9,13 +9,18 @@ show_database::show_database(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    if (index >= ui->tableWidget->rowCount())
-        ui->tableWidget->insertRow(index);
+    std::vector<QStringList> db_list = database_work::GetInstance()->get_species();
 
-    // set items
-    for(int col = 0; col < items.size(); ++col)
-        ui->tableWidget->setItem(index, col,
-            new QTableWidgetItem(items[col]));
+    int index = db_list.size();
+    if (index >= ui->tableWidget->rowCount())
+        ui->tableWidget->insertRow(index);//задаем количество рядов
+
+    for(int row = 0; row < index; ++row)
+    {
+        for(int col = 0; col < 3; ++col)//3 элемента, потом отредачить
+            ui->tableWidget->setItem(row, col,
+                new QTableWidgetItem(db_list[row][col]));
+    }
 }
 
 show_database::~show_database()

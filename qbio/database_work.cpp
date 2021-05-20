@@ -130,19 +130,32 @@ int database_work::save_species(species_ptr sp, const species_stat_entry &st)
     return true;
 }
 
-QStringList database_work::get_species()
+std::vector<QStringList> database_work::get_species()
 {
     QSqlQuery query(db);
 
     query.exec(" select species, q_alive, q_dead from bio_statistics");
-    QUERY_CHECK;
+    if (query.lastError().isValid())\
+    {
+        QString binds;
+        foreach(QString v, query.boundValues().keys())
+            binds += v + " = " + query.boundValues()[v].toString() + ";  ";
+        qDebug() << "** Error in query: " << query.lastQuery();
+        qDebug() << "** Binds: " << binds;
+        qDebug() << "** Error text:";
+        qDebug() << query.lastError().databaseText();
+        qDebug() << query.lastError().driverText();
+        //return false;
+    }
 
+    std::vector<QStringList> items_list;
     while(query.next())
     {
         QStringList items;
         items << query.value(0).toString();
         items << query.value(1).toString();
         items << query.value(2).toString();
+        items_list.push_back(items);
     }
-    return QStringList;
+    return items_list;
 }
