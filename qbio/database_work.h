@@ -10,7 +10,7 @@ class database_work
 {
 
 protected:
-    database_work();;
+    database_work();
     static database_work* database;
 
 public:
@@ -18,7 +18,11 @@ public:
     void operator=(const database_work &) = delete;
     static database_work *GetInstance();
 
-    int save_species( species_ptr sp, species_stat_entry const& st );
+    int create_game(int w, int h);
+    QMap<int, QString> get_games();
+    QList<QStringList> get_species_of_game(int id);
+
+    int save_species(species_ptr sp, species_stat_entry const& st , int game_id);
     std::vector<QStringList> get_species();
 
 private:

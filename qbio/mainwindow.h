@@ -20,6 +20,8 @@ private slots:
 
     void on_about_Button_clicked();
 
+    void on_create_universe_Button_2_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -46,6 +46,16 @@ color: #ffffff;</string>
      </widget>
     </item>
     <item>
+     <widget class="QPushButton" name="create_universe_Button_2">
+      <property name="styleSheet">
+       <string notr="true">background-color: #808080;</string>
+      </property>
+      <property name="text">
+       <string>Check statistics</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="about_Button">
       <property name="styleSheet">
        <string notr="true">background-color: #808080;</string>
@@ -79,7 +89,7 @@ color: #ffffff;</string>
      <x>0</x>
      <y>0</y>
      <width>364</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

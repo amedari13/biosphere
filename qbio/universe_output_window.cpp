@@ -7,7 +7,7 @@
 #include <QGraphicsView>
 #include <QTimer>
 #include <QtAlgorithms>
-#include <show_database.h>
+#include <statistics_window.h>
 
 QColor int2color( int c )
 {
@@ -96,12 +96,14 @@ void UniverseOutputWindow::make_a_cycle()
 
 void UniverseOutputWindow::write_to_db()
 {
+    int game_id = database_work::GetInstance()->create_game(
+                gscene.get_width(),
+                gscene.get_height());
     for(auto const& [sp, st] : stats.by_species)
     {
-        database_work::GetInstance()->save_species( sp, st );
+        database_work::GetInstance()->save_species(sp, st, game_id);
     }
 }
-
 
 UniverseOutputWindow::~UniverseOutputWindow()
 {
@@ -145,8 +147,7 @@ void UniverseOutputWindow::on_stop_universe_clicked()
 {
     killTimer(timer_id);
     write_to_db();
-    show_database win;
-    win.exec();
+    hide();
 }
 
 

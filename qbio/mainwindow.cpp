@@ -3,6 +3,7 @@
 #include "universe_output_window.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
+#include <statistics_window.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -42,16 +43,8 @@ void MainWindow::on_about_Button_clicked()
     QMessageBox::about(this, "About project", "This project was created by Daria Amialiushka\n\t\t\t 2020");
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+void MainWindow::on_create_universe_Button_2_clicked()
+{
+    StatisticsWindow win;
+    win.exec();
+}
