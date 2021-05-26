@@ -25,29 +25,25 @@ void print_scene(global_scene& s)
 			static_cast<int>(fmod(xy.y, s.get_height())))] = 1;
 	}
 
-	auto const & sstat = scene.
+	auto const& sstat = s.get_statistics();
 
 	std::vector<std::string> stat_lines;
 	int index = 0;
-	for (auto& sp : sps)
+	for (auto & [sp, stat] : sstat.by_species)
 	{
-		species_stat& stat = sstat[sp];
-		if (stat.count == 0)
-			continue;
-
-		stat.avr_energy /= stat.count;
-		stat.avr_mass /= stat.count;
+		int avr_energy = stat.count ? stat.total_energy / stat.count : 0;
+		int avr_mass = stat.count ? stat.total_mass / stat.count : 0;
 
 		std::ostringstream ss;
 		ss << "sp#" << ++index << "  : " << stat.count << " alive, " << stat.dead << " dead";
 		stat_lines.push_back(ss.str());
 
 		ss.str("");
-		ss << "energy: " << stat.avr_energy << " (" << stat.max_energy << " max)";
+		ss << "energy: " << avr_energy << " (" << stat.max_energy << " max)";
 		stat_lines.push_back(ss.str());
 
 		ss.str("");
-		ss << "  mass: " << stat.avr_mass << " (" << stat.max_mass << " max)";
+		ss << "  mass: " << avr_mass << " (" << stat.max_mass << " max)";
 		stat_lines.push_back(ss.str());
 	}
 
@@ -61,7 +57,8 @@ void print_scene(global_scene& s)
 		std::cout << "|";
 		for (int c = 0; c < s.get_width(); ++c)
 		{
-			int b = field.count(std::make_tuple(c, r));
+			int b = static_cast<int>(
+				field.count(std::make_tuple(c, r)));
 			std::cout << (b ? "#" : " ");
 		}
 		std::cout << "|";
@@ -74,7 +71,7 @@ void print_scene(global_scene& s)
 		}
 
 		std::cout << " " << line;
-		for (int c = 30 - line.size(); c-- > 0;)
+		for (size_t c = 30 - line.size(); c-- > 0;)
 			std::cout << ' ';
 
 		std::cout << "\n";
